@@ -10,6 +10,8 @@ import android.widget.TextView
 class MainActivity : AppCompatActivity() {
     private lateinit var countdownTextView: TextView
     private lateinit var startButton: Button
+    private lateinit var btnReset: Button
+
     private var isCountdownRunning = false
     private val totalMillis = 2 * 60 * 1000 //2 minbutes in milliseconds
     private var remainingMillis = totalMillis
@@ -22,6 +24,7 @@ class MainActivity : AppCompatActivity() {
 
         countdownTextView = findViewById(R.id.countdownTextView)
         startButton = findViewById(R.id.btnStart)
+        btnReset = findViewById(R.id.btnReset)
 
         startButton.setOnClickListener {
             if (isCountdownRunning) {
@@ -29,6 +32,10 @@ class MainActivity : AppCompatActivity() {
             } else {
                 startCountdown()
             }
+        }
+
+        btnReset.setOnClickListener{
+            resetCountdown()
         }
     }
 
@@ -63,5 +70,12 @@ class MainActivity : AppCompatActivity() {
         countdownTextView.text = formattedTime
     }
 
+    private fun resetCountdown(){
+        countDownTimer?.cancel()
+        isCountdownRunning = false
+        remainingMillis = totalMillis
+        updateConuntdownText()
+        startButton.text = "iniciar"
+    }
 
 }
