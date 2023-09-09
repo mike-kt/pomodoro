@@ -17,6 +17,8 @@ class MainActivity : AppCompatActivity() {
     private var remainingMillis = totalMillis
     private var countDownTimer: CountDownTimer? = null
 
+    private var pausedMillis: Long = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +42,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startCountdown() {
-        countDownTimer = object : CountDownTimer(totalMillis.toLong(), 1000) {
+        countDownTimer = object : CountDownTimer(if(pausedMillis>0)pausedMillis else totalMillis.toLong(), 1000) { //verify paused time
             override fun onTick(millisUntilFinished: Long) {
                 isCountdownRunning = true
                 remainingMillis = millisUntilFinished.toInt()
@@ -60,6 +62,7 @@ class MainActivity : AppCompatActivity() {
         countDownTimer?.cancel()
         isCountdownRunning = false
         startButton.text = "iniciar"
+        pausedMillis = remainingMillis.toLong() //saved the ramain time
     }
 
 
