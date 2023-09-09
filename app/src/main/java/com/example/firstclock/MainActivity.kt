@@ -13,11 +13,16 @@ class MainActivity : AppCompatActivity() {
     private lateinit var btnReset: Button
 
     private var isCountdownRunning = false
-    private val totalMillis = 2 * 60 * 1000 //2 minbutes in milliseconds
+    private val totalMillis = 25 * 60 * 1000 //25 minbutes in milliseconds
+    private val secondCountdownMillis = 5 * 60 * 1000 //5 minutes in milliseconds
+
+    private val testSeconds = 1 * 60 * 1000
+
     private var remainingMillis = totalMillis
     private var countDownTimer: CountDownTimer? = null
 
     private var pausedMillis: Long = 0
+    private var isSecondCountdown = false
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,33 +37,49 @@ class MainActivity : AppCompatActivity() {
             if (isCountdownRunning) {
                 pauseCountdown()
             } else {
-                startCountdown()
+                if (!isSecondCountdown) {
+                    startCountdown(testSeconds.toLong())
+                } else {
+                    startCountdown(secondCountdownMillis.toLong())
+                }
             }
         }
 
-        btnReset.setOnClickListener{
+        btnReset.setOnClickListener {
             resetCountdown()
         }
     }
 
-    private fun startCountdown() {
-        countDownTimer = object : CountDownTimer(if(pausedMillis>0)pausedMillis else totalMillis.toLong(), 1000) { //verify paused time
+    private fun startCountdown(durationMillis: Long) {
+        countDownTimer?.cancel()
+
+
+        countDownTimer = object : CountDownTimer(
+            if (pausedMillis > 0) pausedMillis else durationMillis,
+            1000
+        ) { //verify paused time
             override fun onTick(millisUntilFinished: Long) {
                 isCountdownRunning = true
                 remainingMillis = millisUntilFinished.toInt()
-                updateConuntdownText()
+                updateCountdownText()
             }
 
             override fun onFinish() {
                 isCountdownRunning = false
-                countdownTextView.text = "Tempo esgotado!"
+                if (!isSecondCountdown) {
+                    countdownTextView.text = "Tempo esgotado!"
+                    isSecondCountdown = true
+                    startCountdown(secondCountdownMillis.toLong())
+                } else {
+                    countdownTextView.text = "Tempo de descanço esgotado!"
+                }
             }
         }
         countDownTimer?.start()
         startButton.text = "pausar"
     }
 
-    private fun pauseCountdown(){
+    private fun pauseCountdown() {
         countDownTimer?.cancel()
         isCountdownRunning = false
         startButton.text = "iniciar"
@@ -66,18 +87,19 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun updateConuntdownText() {
+    private fun updateCountdownText() {
         val minutes = (remainingMillis / 1000) / 60
         val seconds = (remainingMillis / 1000) % 60
         val formattedTime = String.format("%02d:%02d", minutes, seconds)
         countdownTextView.text = formattedTime
     }
 
-    private fun resetCountdown(){
+    private fun resetCountdown() {
         countDownTimer?.cancel()
         isCountdownRunning = false
+        isSecondCountdown = false
         remainingMillis = totalMillis
-        updateConuntdownText()
+        updateCountdownText()
         startButton.text = "iniciar"
     }
 
