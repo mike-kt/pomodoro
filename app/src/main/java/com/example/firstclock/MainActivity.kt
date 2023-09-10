@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         isSecondCountdown = false
         remainingMillis = totalMillis
         updateCountdownText()
+        pausedMillis = 0
         progressBar.progress = totalMillis
         startButton.setImageResource(R.drawable.play)
     }
